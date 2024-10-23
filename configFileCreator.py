@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import (
       QSpinBox
 )
 from PyQt6.QtGui import QAction, QIcon
+from functools import partial
 import qrc_resources
 
 
@@ -43,6 +44,8 @@ class Window(QMainWindow):
         #adding the actions for the file menu
         fileMenu.addAction(self.newAction)
         fileMenu.addAction(self.openAction)
+            #adding an open recent submenu
+        self.openRecentMenu = fileMenu.addMenu("Open Recent")
         fileMenu.addAction(self.saveAction)
            #adding a separator
         fileMenu.addSeparator()
@@ -148,6 +151,24 @@ class Window(QMainWindow):
         #launching the menu
         menu.exec(event.globalPos())
 
+    def populateOpenRecent(self):
+        #step 1: remove the old options from the menu
+        self.openRecentMenu.clear()
+
+        #step 2: dinamically create the actions
+        #just creates a list of 5 hypothetical files
+        #replace this with real code
+        actions = []
+        filenames = [f"File-{n}" for n in range(5)]
+        for filename in filenames:
+            action = QAction(filename, self)
+            action.triggered.connect(partial(self.openRecentFile, filename))
+            actions.append(action)
+
+        #step 3: add the actions to the menu
+        self.openRecentMenu.addActions(actions)
+
+
     def _connectActions(self):
         #connect file actions >> action.triggered.connect(slot)
         self.newAction.triggered.connect(self.newFile)
@@ -161,6 +182,7 @@ class Window(QMainWindow):
         #connect help actions
         self.helpContentAction.triggered.connect(self.helpContent)
         self.aboutAction.triggered.connect(self.about)
+        self.openRecentMenu.aboutToShow.connect(self.populateOpenRecent)
 
 
     ## the slots
@@ -195,6 +217,12 @@ class Window(QMainWindow):
     def about(self):
         #logic for showing an about dialog content goes here
         self.centralWidget.setText("<b>Help > About...</b> clicked")
+
+    def openRecentFile(self, filename):
+        self.centralWidget.setText(f"<b>{filename}</b> opened")
+
+
+
 
 
 
