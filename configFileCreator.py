@@ -30,7 +30,8 @@ class Window(QMainWindow):
         self._createMenuBar()
         #for the toolbar:
         self._createToolBars()
-        self._createContextMenu()
+        #self._createContextMenu()
+        self._connectActions()
 
 
     def _createMenuBar(self):
@@ -115,16 +116,85 @@ class Window(QMainWindow):
         self.helpContentAction = QAction("&Help Content", self)
         self.aboutAction = QAction("&About", self)
 
-    def _createContextMenu(self):
-        #setting contextMenuPolicy
-        self.centralWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
-        #Populating the widget with actions
-        self.centralWidget.addAction(self.newAction)
-        self.centralWidget.addAction(self.openAction)
-        self.centralWidget.addAction(self.saveAction)
-        self.centralWidget.addAction(self.copyAction)
-        self.centralWidget.addAction(self.pasteAction)
-        self.centralWidget.addAction(self.cutAction)
+#    def _createContextMenu(self):
+#        #setting contextMenuPolicy
+#        self.centralWidget.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
+#        #Populating the widget with actions
+#        self.centralWidget.addAction(self.newAction)
+#        self.centralWidget.addAction(self.openAction)
+#        self.centralWidget.addAction(self.saveAction)
+#        self.centralWidget.addAction(self.copyAction)
+#        self.centralWidget.addAction(self.pasteAction)
+#        self.centralWidget.addAction(self.cutAction)
+
+    #creating context menus through event handling
+        #to override _createContextMenu
+        #(just comment out self._createContextMenu in the constructor)
+    def contextMenuEvent(self, event):
+        #creating a menu object with the central widget as parent
+        menu = QMenu(self.centralWidget)
+        #populating the menu with actions
+        menu.addAction(self.newAction)
+        menu.addAction(self.openAction)
+        menu.addAction(self.saveAction)
+          #creating a separator action
+        separator = QAction(self)
+        separator.setSeparator(True)
+          #adding the separator to the menu
+        menu.addAction(separator)
+        menu.addAction(self.copyAction)
+        menu.addAction(self.pasteAction)
+        menu.addAction(self.cutAction)
+        #launching the menu
+        menu.exec(event.globalPos())
+
+    def _connectActions(self):
+        #connect file actions >> action.triggered.connect(slot)
+        self.newAction.triggered.connect(self.newFile)
+        self.openAction.triggered.connect(self.openFile)
+        self.saveAction.triggered.connect(self.saveFile)
+        self.exitAction.triggered.connect(self.close)
+        #connect edit actions
+        self.copyAction.triggered.connect(self.copyContent)
+        self.pasteAction.triggered.connect(self.pasteContent)
+        self.cutAction.triggered.connect(self.cutContent)
+        #connect help actions
+        self.helpContentAction.triggered.connect(self.helpContent)
+        self.aboutAction.triggered.connect(self.about)
+
+
+    ## the slots
+    def newFile(self):
+        #logic for creating a new file goes here
+        self.centralWidget.setText("<b>File > New</b> clicked")
+
+    def openFile(self):
+        #logic for opening an existing file goes here
+        self.centralWidget.setText("<b>File > Open...</b> clicked")
+
+    def saveFile(self):
+        #logic for saving a file goes here
+        self.centralWidget.setText("<b>File > Save</b> clicked")
+
+    def copyContent(self):
+        #logic for copying content goes here
+        self.centralWidget.setText("<b>Edit > Copy</b> clicked")
+
+    def pasteContent(self):
+        #logic for pasting content goes here
+        self.centralWidget.setText("<b>Edit > Paste</b> clicked")
+
+    def cutContent(self):
+        #logic for cutting content goes here
+        self.centralWidget.setText("<b>Edit > Cut</b> clicked")
+
+    def helpContent(self):
+        #logic for launching help goes here
+        self.centralWidget.setText("<b>Help > Help Content...</b> clicked")
+
+    def about(self):
+        #logic for showing an about dialog content goes here
+        self.centralWidget.setText("<b>Help > About...</b> clicked")
 
 
 
