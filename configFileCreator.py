@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (
       QToolBar,
       QSpinBox
 )
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import QAction, QIcon, QKeySequence
 from functools import partial
 import qrc_resources
 
@@ -33,6 +33,7 @@ class Window(QMainWindow):
         self._createToolBars()
         #self._createContextMenu()
         self._connectActions()
+        self._createStatusBar()
 
 
     def _createMenuBar(self):
@@ -64,11 +65,6 @@ class Window(QMainWindow):
         subfindMenu.addAction("Find...")
         subfindMenu.addAction("Replace...")
 
-        #the help menu
-        helpMenu = menuBar.addMenu("&Help")
-        helpMenu.addAction(self.helpContentAction)
-        helpMenu.addAction(self.aboutAction)
-
         #the analyser menu
         analyserMenu = menuBar.addMenu("&Analyser")
         SolarSubanalyserMenu = analyserMenu.addMenu("Solar")
@@ -76,6 +72,11 @@ class Window(QMainWindow):
         SolarSubanalyserMenu.addAction("Dual FID")
         PulsarSubAnalyserMenu = analyserMenu.addAction("Pulsar")
         QuasarSubAnalyserMenu = analyserMenu.addAction("Quasar")
+
+        #the help menu
+        helpMenu = menuBar.addMenu("&Help")
+        helpMenu.addAction(self.helpContentAction)
+        helpMenu.addAction(self.aboutAction)
 
 
     def _createToolBars(self):
@@ -102,6 +103,14 @@ class Window(QMainWindow):
         helpToolBar = QToolBar("Help", self)
         self.addToolBar(helpToolBar)
 
+    def _createStatusBar(self):
+        self.statusbar = self.statusBar()
+        #adding a temporary message
+        self.statusbar.showMessage("Ready", 3000) #30 00 milliseconds
+        #adding a permanent message
+        self.wcLabel = QLabel(f"{self.getWordCount()} words")
+        self.statusbar.addPermanentWidget(self.wcLabel)
+
     def _createActions(self):
         #Creating actions using the first constructor
         #File actions
@@ -118,6 +127,29 @@ class Window(QMainWindow):
         self.cutAction = QAction("C&ut", self)
         self.helpContentAction = QAction("&Help Content", self)
         self.aboutAction = QAction("&About", self)
+
+        #using string-based key sequences
+        self.newAction.setShortcut("Ctrl+N")
+        self.openAction.setShortcut("Ctrl+O")
+        self.saveAction.setShortcut("Ctrl+S")
+        self.copyAction.setShortcut("Ctrl+C")
+        self.pasteAction.setShortcut("Ctrl+V")
+        self.cutAction.setShortcut("Ctrl+X")
+        self.helpContentAction.setShortcut("Ctrl+H")
+
+        #adding help tips
+        newTip = "Create a new file"
+        self.newAction.setStatusTip(newTip)
+        self.newAction.setToolTip(newTip)
+
+        openTip = "Open a file"
+        self.openAction.setStatusTip(openTip)
+        self.openAction.setToolTip(openTip)
+
+        saveTip = "Save the current file"
+        self.saveAction.setStatusTip(saveTip)
+        self.saveAction.setToolTip(saveTip)
+
 
 #    def _createContextMenu(self):
 #        #setting contextMenuPolicy
@@ -183,6 +215,11 @@ class Window(QMainWindow):
         self.helpContentAction.triggered.connect(self.helpContent)
         self.aboutAction.triggered.connect(self.about)
         self.openRecentMenu.aboutToShow.connect(self.populateOpenRecent)
+
+        #replace this later
+    def getWordCount(self):
+        return 42
+
 
 
     ## the slots
